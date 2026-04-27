@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { X } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { PRESET_PROVIDERS, type ApiProvider } from './types'
@@ -49,9 +48,13 @@ export default function AddApiDialog({ isOpen, onClose, onSave, editData }: AddA
       <div className="bg-background rounded-lg w-full max-w-md p-6 shadow-xl">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold">{editData ? '编辑 API' : '添加 API 提供商'}</h2>
-          <Button variant="ghost" size="icon" onClick={onClose}>
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-2 rounded-md hover:bg-accent transition-colors"
+          >
             <X className="w-4 h-4" />
-          </Button>
+          </button>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -99,8 +102,19 @@ export default function AddApiDialog({ isOpen, onClose, onSave, editData }: AddA
           </div>
 
           <div className="flex justify-end gap-2 pt-4">
-            <Button type="button" variant="outline" onClick={onClose}>取消</Button>
-            <Button type="submit">{editData ? '保存' : '添加'}</Button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 text-sm font-medium rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-colors"
+            >
+              取消
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 text-sm font-medium rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+            >
+              {editData ? '保存' : '添加'}
+            </button>
           </div>
         </form>
       </div>

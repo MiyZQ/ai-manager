@@ -18,6 +18,7 @@ export default function ApiView() {
 
   const loadProviders = async () => {
     setIsLoading(true)
+    setMessage(null)
     try {
       if (window.electronAPI?.getApiProviders) {
         const data = await window.electronAPI.getApiProviders()
@@ -28,7 +29,7 @@ export default function ApiView() {
       }
     } catch (error) {
       console.error('Failed to load providers:', error)
-      setProviders([])
+      setMessage('加载失败')
     }
     setIsLoading(false)
   }
@@ -69,6 +70,7 @@ export default function ApiView() {
         setTimeout(() => setMessage(null), 3000)
       } catch (error) {
         console.error('Failed to delete provider:', error)
+        setMessage('删除失败')
       }
     }
   }
@@ -77,6 +79,8 @@ export default function ApiView() {
     try {
       await window.electronAPI.updateApiProvider(provider.id, { isActive: !provider.isActive })
       await loadProviders()
+      setMessage(provider.isActive ? '已停用' : '已激活')
+      setTimeout(() => setMessage(null), 2000)
     } catch (error) {
       console.error('Failed to toggle active:', error)
     }
@@ -111,14 +115,23 @@ export default function ApiView() {
               {message}
             </span>
           )}
-          <Button onClick={loadProviders} disabled={isLoading} variant="outline" className="gap-2">
+          <button
+            type="button"
+            onClick={loadProviders}
+            disabled={isLoading}
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium rounded-lg border border-input bg-background hover:bg-accent hover:text-accent-foreground disabled:opacity-50 disabled:pointer-events-none transition-colors"
+          >
             <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
             刷新
-          </Button>
-          <Button onClick={handleAdd} className="gap-2">
+          </button>
+          <button
+            type="button"
+            onClick={handleAdd}
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+          >
             <Plus className="w-4 h-4" />
             添加 API
-          </Button>
+          </button>
         </div>
       </div>
 
@@ -139,8 +152,9 @@ export default function ApiView() {
                     </div>
                   </div>
                   <button
+                    type="button"
                     onClick={() => handleToggleActive(provider)}
-                    className={`w-3 h-3 rounded-full ${provider.isActive ? 'bg-green-500' : 'bg-gray-300'}`}
+                    className={`w-3 h-3 rounded-full cursor-pointer ${provider.isActive ? 'bg-green-500' : 'bg-gray-300'}`}
                     title={provider.isActive ? '已激活' : '已停用'}
                   />
                 </div>
@@ -160,32 +174,29 @@ export default function ApiView() {
                   )}
                   {/* 操作按钮 */}
                   <div className="flex items-center gap-2 pt-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="flex-1 gap-1"
+                    <button
+                      type="button"
                       onClick={() => handleTest(provider)}
+                      className="inline-flex items-center justify-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-colors flex-1"
                     >
                       <Play className="w-3 h-3" />
                       测试
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="flex-1 gap-1"
+                    </button>
+                    <button
+                      type="button"
                       onClick={() => handleEdit(provider)}
+                      className="inline-flex items-center justify-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-colors flex-1"
                     >
                       <Settings className="w-3 h-3" />
                       编辑
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
+                    </button>
+                    <button
+                      type="button"
                       onClick={() => handleDelete(provider.id)}
-                      className="px-2 text-destructive hover:text-destructive hover:bg-destructive/10"
+                      className="inline-flex items-center justify-center gap-1 px-2 py-1.5 text-xs font-medium rounded-md border border-input bg-background text-destructive hover:bg-destructive/10 transition-colors"
                     >
                       <Trash2 className="w-3 h-3" />
-                    </Button>
+                    </button>
                   </div>
                 </div>
               </CardContent>
