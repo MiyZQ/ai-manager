@@ -19,10 +19,16 @@ export default function ApiView() {
   const loadProviders = async () => {
     setIsLoading(true)
     try {
-      const data = await window.electronAPI.getApiProviders()
-      setProviders(data)
+      if (window.electronAPI?.getApiProviders) {
+        const data = await window.electronAPI.getApiProviders()
+        setProviders(data || [])
+      } else {
+        console.warn('electronAPI.getApiProviders not available')
+        setProviders([])
+      }
     } catch (error) {
       console.error('Failed to load providers:', error)
+      setProviders([])
     }
     setIsLoading(false)
   }

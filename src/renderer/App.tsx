@@ -53,7 +53,7 @@ function App() {
             </div>
             <span className="font-semibold">AI Manager</span>
           </div>
-          <Button variant="ghost" size="icon" className="h-8 w-8">
+<Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => alert('设置功能开发中...')}>
             <Settings className="w-4 h-4" />
           </Button>
         </div>
