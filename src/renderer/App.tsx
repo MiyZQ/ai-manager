@@ -1,17 +1,19 @@
 import { useState } from 'react'
-import { Settings, MessageSquare, FolderKanban, Link2, Skull, BarChart3 } from 'lucide-react'
+import { Settings, MessageSquare, FolderKanban, Link2, Skull, BarChart3, Globe } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import PromptsView from '@/components/prompts/PromptsView'
 import ProjectsView from '@/components/projects/ProjectsView'
 import ReposView from '@/components/repos/ReposView'
 import MCPView from '@/components/mcp/MCPView'
+import ApiView from '@/components/api/ApiView'
 import KillView from '@/components/kill/KillView'
 
-type NavItem = 'prompts' | 'projects' | 'mcp' | 'kill' | 'repos'
+type NavItem = 'prompts' | 'projects' | 'api' | 'mcp' | 'kill' | 'repos'
 
 const navItems: { id: NavItem; label: string; icon: React.ReactNode }[] = [
   { id: 'prompts', label: '提示词', icon: <MessageSquare className="w-5 h-5" /> },
   { id: 'projects', label: '项目', icon: <FolderKanban className="w-5 h-5" /> },
+  { id: 'api', label: 'API', icon: <Globe className="w-5 h-5" /> },
   { id: 'mcp', label: 'MCP', icon: <Link2 className="w-5 h-5" /> },
   { id: 'kill', label: 'Kill', icon: <Skull className="w-5 h-5" /> },
   { id: 'repos', label: '仓库', icon: <BarChart3 className="w-5 h-5" /> }
@@ -26,6 +28,8 @@ function App() {
         return <PromptsView />
       case 'projects':
         return <ProjectsView />
+      case 'api':
+        return <ApiView />
       case 'mcp':
         return <MCPView />
       case 'kill':
