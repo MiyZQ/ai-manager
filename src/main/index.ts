@@ -54,10 +54,33 @@ interface Repository {
   lastAccessed: string
 }
 
+interface UsageRecord {
+  date: string
+  requests: number
+  inputTokens: number
+  outputTokens: number
+  cost: number
+}
+
+interface ApiProvider {
+  id: string
+  name: string
+  provider: string
+  apiKey: string
+  endpoint?: string
+  models: string[]
+  isActive: boolean
+  usageStats: UsageRecord[]
+  costLimit?: number
+  createdAt: string
+  updatedAt: string
+}
+
 interface AppData {
   prompts: Prompt[]
   projects: Project[]
   repositories: Repository[]
+  apiProviders: ApiProvider[]
   settings: {
     theme: 'light' | 'dark' | 'system'
     sidebarWidth: number
@@ -68,6 +91,7 @@ const defaultData: AppData = {
   prompts: [],
   projects: [],
   repositories: [],
+  apiProviders: [],
   settings: {
     theme: 'system',
     sidebarWidth: 240
@@ -285,12 +309,54 @@ ipcMain.handle('repos:scan', async () => {
     }
   }
 
-  log.info('Total repos found:', repos.length)
+log.info('Total repos found:', repos.length)
 
   const data = await loadData()
   data.repositories = repos
   await saveData(data)
   return repos
+})
+
+// API Providers CRUD
+ipcMain.handle('apiProviders:getAll', async () => {
+  const data = await loadData()
+  return data.apiProviders
+})
+
+ipcMain.handle('apiProviders:create', async (_, provider: Omit<ApiProvider, 'id' | 'createdAt' | 'updatedAt'>) => {
+  const data = await loadData()
+  const now = new Date().toISOString()
+  const newProvider: ApiProvider = {
+    ...provider,
+    id: generateId(),
+    createdAt: now,
+    updatedAt: now
+  }
+  data.apiProviders.push(newProvider)
+  await saveData(data)
+  return newProvider
+})
+
+ipcMain.handle('apiProviders:update', async (_, id: string, updates: Partial<ApiProvider>) => {
+  const data = await loadData()
+  const index = data.apiProviders.findIndex(p => p.id === id)
+  if (index !== -1) {
+    data.apiProviders[index] = {
+      ...data.apiProviders[index],
+      ...updates,
+      updatedAt: new Date().toISOString()
+    }
+    await saveData(data)
+    return data.apiProviders[index]
+  }
+  return null
+})
+
+ipcMain.handle('apiProviders:delete', async (_, id: string) => {
+  const data = await loadData()
+  data.apiProviders = data.apiProviders.filter(p => p.id !== id)
+  await saveData(data)
+  return { success: true }
 })
 
 // 辅助函数：递归计算文件数量
