@@ -103,7 +103,21 @@ async function loadData(): Promise<AppData> {
   try {
     if (existsSync(dataFilePath)) {
       const content = await readFile(dataFilePath, 'utf-8')
-      return JSON.parse(content)
+      const data = JSON.parse(content)
+      // 确保 apiProviders 存在（兼容旧数据）
+      if (!data.apiProviders) {
+        data.apiProviders = []
+      }
+      if (!data.repositories) {
+        data.repositories = []
+      }
+      if (!data.prompts) {
+        data.prompts = []
+      }
+      if (!data.projects) {
+        data.projects = []
+      }
+      return data
     }
   } catch (error) {
     log.error('Failed to load data:', error)
