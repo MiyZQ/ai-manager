@@ -33,6 +33,28 @@ export interface Repository {
   lastAccessed: string
 }
 
+export interface UsageRecord {
+  date: string
+  requests: number
+  inputTokens: number
+  outputTokens: number
+  cost: number
+}
+
+export interface ApiProvider {
+  id: string
+  name: string
+  provider: string
+  apiKey: string
+  endpoint?: string
+  models: string[]
+  isActive: boolean
+  usageStats: UsageRecord[]
+  costLimit?: number
+  createdAt: string
+  updatedAt: string
+}
+
 export interface AppData {
   prompts: Prompt[]
   projects: Project[]
@@ -61,6 +83,12 @@ export interface ElectronAPI {
   // 仓库扫描
   scanRepos: () => Promise<Repository[]>
 
+  // API Providers
+  getApiProviders: () => Promise<ApiProvider[]>
+  createApiProvider: (provider: Omit<ApiProvider, 'id' | 'createdAt' | 'updatedAt'>) => Promise<ApiProvider>
+  updateApiProvider: (id: string, updates: Partial<ApiProvider>) => Promise<ApiProvider | null>
+  deleteApiProvider: (id: string) => Promise<{ success: boolean }>
+
   // Shell
   openExternal: (url: string) => Promise<void>
   openPath: (path: string) => Promise<void>
@@ -83,6 +111,12 @@ const electronAPI: ElectronAPI = {
 
   // 仓库扫描
   scanRepos: () => ipcRenderer.invoke('repos:scan'),
+
+  // API Providers
+  getApiProviders: () => ipcRenderer.invoke('apiProviders:getAll'),
+  createApiProvider: (provider) => ipcRenderer.invoke('apiProviders:create', provider),
+  updateApiProvider: (id, updates) => ipcRenderer.invoke('apiProviders:update', id, updates),
+  deleteApiProvider: (id) => ipcRenderer.invoke('apiProviders:delete', id),
 
   // Shell
   openExternal: (url) => ipcRenderer.invoke('shell:openExternal', url),
