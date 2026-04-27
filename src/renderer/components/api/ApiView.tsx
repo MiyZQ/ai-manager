@@ -45,18 +45,21 @@ export default function ApiView() {
   }
 
   const handleSave = async (providerData: Omit<ApiProvider, 'id' | 'createdAt' | 'updatedAt'>) => {
+    console.log('Saving provider data:', JSON.stringify(providerData, null, 2))
     try {
       if (editingProvider) {
-        await window.electronAPI.updateApiProvider(editingProvider.id, providerData)
+        const result = await window.electronAPI.updateApiProvider(editingProvider.id, providerData)
+        console.log('Update result:', result)
         setMessage('API 更新成功')
       } else {
-        await window.electronAPI.createApiProvider(providerData)
+        const result = await window.electronAPI.createApiProvider(providerData)
+        console.log('Create result:', result)
         setMessage('API 添加成功')
       }
       await loadProviders()
     } catch (error) {
       console.error('Failed to save provider:', error)
-      setMessage('保存失败')
+      setMessage('保存失败: ' + String(error))
     }
     setTimeout(() => setMessage(null), 3000)
   }
