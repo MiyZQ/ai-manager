@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Plus, RefreshCw, Settings, Trash2, Test, Loader2 } from 'lucide-react'
+import { Plus, RefreshCw, Settings, Trash2, Play, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import AddApiDialog from './AddApiDialog'
@@ -160,7 +160,7 @@ export default function ApiView() {
                       className="flex-1 gap-1"
                       onClick={() => handleTest(provider)}
                     >
-                      <Test className="w-3 h-3" />
+                      <Play className="w-3 h-3" />
                       测试
                     </Button>
                     <Button
