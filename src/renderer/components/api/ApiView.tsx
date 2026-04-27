@@ -89,12 +89,213 @@ export default function ApiView() {
     }
   }
 
-  const handleTest = (provider: ApiProvider) => {
+  const handleTest = async (provider: ApiProvider) => {
     setMessage(`正在测试 ${provider.name}...`)
-    setTimeout(() => {
-      setMessage(`${provider.name} 连接成功！`)
-      setTimeout(() => setMessage(null), 3000)
-    }, 1000)
+
+    try {
+      let success = false
+      let errorMsg = ''
+
+      const endpoint = provider.endpoint || getDefaultEndpoint(provider.provider)
+
+      if (provider.provider === 'claude') {
+        // 测试 Claude API
+        const response = await fetch(`${endpoint}/v1/messages`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': provider.apiKey,
+            'anthropic-version': '2023-06-01'
+          },
+          body: JSON.stringify({
+            model: 'claude-3-haiku-20240307',
+            max_tokens: 10,
+            messages: [{ role: 'user', content: 'hi' }]
+          })
+        })
+        success = response.ok
+        if (!success) {
+          const data = await response.json().catch(() => ({}))
+          errorMsg = data.error?.message || `HTTP ${response.status}`
+        }
+      } else if (provider.provider === 'openai') {
+        // 测试 OpenAI API
+        const response = await fetch(`${endpoint}/v1/chat/completions`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${provider.apiKey}`
+          },
+          body: JSON.stringify({
+            model: 'gpt-3.5-turbo',
+            messages: [{ role: 'user', content: 'hi' }],
+            max_tokens: 5
+          })
+        })
+        success = response.ok
+        if (!success) {
+          const data = await response.json().catch(() => ({}))
+          errorMsg = data.error?.message || `HTTP ${response.status}`
+        }
+      } else if (provider.provider === 'deepseek') {
+        // 测试 DeepSeek API
+        const response = await fetch(`${endpoint}/v1/chat/completions`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${provider.apiKey}`
+          },
+          body: JSON.stringify({
+            model: 'deepseek-chat',
+            messages: [{ role: 'user', content: 'hi' }],
+            max_tokens: 5
+          })
+        })
+        success = response.ok
+        if (!success) {
+          const data = await response.json().catch(() => ({}))
+          errorMsg = data.error?.message || `HTTP ${response.status}`
+        }
+      } else if (provider.provider === 'glm') {
+        // 测试智谱 GLM API
+        const response = await fetch(`${endpoint}/api/paas/v4/chat/completions`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${provider.apiKey}`
+          },
+          body: JSON.stringify({
+            model: 'glm-4-flash',
+            messages: [{ role: 'user', content: 'hi' }],
+            max_tokens: 5
+          })
+        })
+        success = response.ok
+        if (!success) {
+          const data = await response.json().catch(() => ({}))
+          errorMsg = data.error?.message || `HTTP ${response.status}`
+        }
+      } else if (provider.provider === 'minimax') {
+        // 测试 MiniMax API
+        const response = await fetch(`${endpoint}/v1/text/chatcompletion_v2`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${provider.apiKey}`
+          },
+          body: JSON.stringify({
+            model: 'abab6-chat',
+            messages: [{ role: 'user', content: 'hi' }],
+            max_tokens: 5
+          })
+        })
+        success = response.ok
+        if (!success) {
+          const data = await response.json().catch(() => ({}))
+          errorMsg = data.error?.message || `HTTP ${response.status}`
+        }
+      } else if (provider.provider === 'kimi') {
+        // 测试 Kimi API
+        const response = await fetch(`${endpoint}/v1/chat/completions`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${provider.apiKey}`
+          },
+          body: JSON.stringify({
+            model: 'moonshot-v1-8k',
+            messages: [{ role: 'user', content: 'hi' }],
+            max_tokens: 5
+          })
+        })
+        success = response.ok
+        if (!success) {
+          const data = await response.json().catch(() => ({}))
+          errorMsg = data.error?.message || `HTTP ${response.status}`
+        }
+      } else if (provider.provider === 'qwen') {
+        // 测试通义千问 API
+        const response = await fetch(`${endpoint}/v1/chat/completions`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${provider.apiKey}`
+          },
+          body: JSON.stringify({
+            model: 'qwen-turbo',
+            messages: [{ role: 'user', content: 'hi' }],
+            max_tokens: 5
+          })
+        })
+        success = response.ok
+        if (!success) {
+          const data = await response.json().catch(() => ({}))
+          errorMsg = data.error?.message || `HTTP ${response.status}`
+        }
+      } else if (provider.provider === 'silicon') {
+        // 测试硅基流动 API
+        const response = await fetch(`${endpoint}/v1/chat/completions`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${provider.apiKey}`
+          },
+          body: JSON.stringify({
+            model: 'Qwen/Qwen2-7B-Instruct',
+            messages: [{ role: 'user', content: 'hi' }],
+            max_tokens: 5
+          })
+        })
+        success = response.ok
+        if (!success) {
+          const data = await response.json().catch(() => ({}))
+          errorMsg = data.error?.message || `HTTP ${response.status}`
+        }
+      } else {
+        // 自定义 provider，使用 OpenAI 兼容接口
+        const response = await fetch(`${endpoint}/v1/chat/completions`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${provider.apiKey}`
+          },
+          body: JSON.stringify({
+            model: 'gpt-3.5-turbo',
+            messages: [{ role: 'user', content: 'hi' }],
+            max_tokens: 5
+          })
+        })
+        success = response.ok
+        if (!success) {
+          const data = await response.json().catch(() => ({}))
+          errorMsg = data.error?.message || `HTTP ${response.status}`
+        }
+      }
+
+      if (success) {
+        setMessage(`${provider.name} 连接成功！`)
+      } else {
+        setMessage(`${provider.name} 连接失败：${errorMsg}`)
+      }
+    } catch (error) {
+      setMessage(`${provider.name} 连接失败：${error.message}`)
+    }
+
+    setTimeout(() => setMessage(null), 5000)
+  }
+
+  function getDefaultEndpoint(providerId: string): string {
+    const endpoints: Record<string, string> = {
+      claude: 'https://api.anthropic.com',
+      openai: 'https://api.openai.com',
+      deepseek: 'https://api.deepseek.com',
+      glm: 'https://open.bigmodel.cn',
+      minimax: 'https://api.minimax.chat',
+      kimi: 'https://api.moonshot.cn',
+      qwen: 'https://dashscope.aliyuncs.com',
+      silicon: 'https://api.siliconflow.cn'
+    }
+    return endpoints[providerId] || ''
   }
 
   const getTotalUsage = (provider: ApiProvider) => {
